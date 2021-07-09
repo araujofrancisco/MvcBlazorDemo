@@ -2,18 +2,14 @@ using FD.SampleData.Data;
 using MvcBlazorDemo.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MvcBlazorDemo.Data;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace MvcBlazorDemo
 {
@@ -56,14 +52,24 @@ namespace MvcBlazorDemo
 
             services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
             {
-                // taken from https://stackoverflow.com/questions/53861496/how-to-restrict-microsoft-account-external-login-to-a-list-of-emails-or-to-one
-                microsoftOptions.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents
-                {
-
-                };
                 microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
                 microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
             });
+
+            services.AddAuthentication().AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                };
+            });
+
 
             services.AddRazorPages();
             services.AddServerSideBlazor().AddCircuitOptions(o =>
@@ -115,10 +121,7 @@ namespace MvcBlazorDemo
 
             app.UseEndpoints(endpoints =>
             {
-                //endpoints.MapDefaultControllerRoute();
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapDefaultControllerRoute();
                 endpoints.MapRazorPages();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToController("Blazor", "Home");
