@@ -1,0 +1,42 @@
+﻿@page "/tracelog"
+@attribute [Authorize]
+
+@inject IDataService DataService
+
+<h1>Tracelog</h1>
+
+<DataTable @ref="_table" TModel="TraceLog" Items="LoadItems"
+           SortChanged="(c, d) => { this.SortColumn = c; this.SortDirection = d; }"
+           ContainerCssClass="d-flex justify-center align-center"
+           ContainerAttributes=@(new Dictionary<string, object>() { { "style", "width: 100%;" } })
+           Styles=@(TableStyle.Striped | TableStyle.Hover)
+           TableAttributes=@(new Dictionary<string, object>() { { "style", "width: 100%;" } })
+           AllowRowSelection="true"
+           HideVirtualizePlaceholder="true" VirtualizePlaceholder=@((e) => e.AddMarkupContent(1,"<p><em>Loading...</em></p>"))>
+
+    <DataTableColumn TModel="TraceLog" IsSortable="true" Property="(e) => e.Id" />
+    <DataTableColumn TModel="TraceLog" IsSortable="true" Property="(e) => e.TraceIdentifier" />
+    <DataTableColumn TModel="TraceLog" IsSortable="true" Property="(e) => e.DateTime" IsDefaultSortColumn="true" DefaultSortDirection="SortDirection.Descending"/>
+    <DataTableColumn TModel="TraceLog" IsSortable="true" Property="(e) => e.User" />
+    <DataTableColumn TModel="TraceLog" IsSortable="true" Property="(e) => e.RemoteIpAddress" />
+    <DataTableColumn TModel="TraceLog" IsSortable="true" Property="(e) => e.Schema" />
+    <DataTableColumn TModel="TraceLog" IsSortable="true" Property="(e) => e.Host" />
+    <DataTableColumn TModel="TraceLog" IsSortable="true" Property="(e) => e.Path" />
+    <DataTableColumn TModel="TraceLog" IsSortable="true" Property="(e) => e.QueryString" />
+    <DataTableColumn TModel="TraceLog" IsSortable="true" Property="(e) => e.RequestBody" />
+</DataTable>
+
+@code
+{
+    private string SortColumn { get; set; }
+    private SortDirection SortDirection { get; set; }
+
+    private DataTable<TraceLog> _table;
+
+    protected async ValueTask<ItemsProviderResult<TraceLog>> LoadItems(ItemsProviderRequest request)
+    {
+        var fc = await DataService.GetTraceLogs();
+        if (SortColumn != null) fc = (SortDirection == SortDirection.Ascending) ? fc.OrderBy(SortColumn).ToList() : fc.OrderByDescending(SortColumn).ToList();
+        return new ItemsProviderResult<TraceLog>(fc.Skip(request.StartIndex).Take(request.Count), fc.Count());
+    }
+}
