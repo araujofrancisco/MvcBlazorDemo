@@ -7,7 +7,10 @@ namespace MvcBlazorDemo.Models
         public int Id { get; set; }
         public string TraceIdentifier { get; set; }
         public string User { get; set; }
+        public string LocalIpAddress { get; set; }
+        public int LocalPort { get; set; }
         public string RemoteIpAddress { get; set; }
+        public int RemotePort { get; set; }
         public DateTime DateTime { get; set; }
         public string Schema { get; set; }
         public string Host { get; set; }
