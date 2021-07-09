@@ -52,8 +52,8 @@ namespace MvcBlazorDemo
 
             services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
             {
-                microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
-                microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
+                microsoftOptions.ClientId = Configuration["Authentication_Microsoft_ClientId"];
+                microsoftOptions.ClientSecret = Configuration["Authentication_Microsoft_ClientSecret"];
             });
 
             services.AddAuthentication().AddJwtBearer(options =>
@@ -66,7 +66,7 @@ namespace MvcBlazorDemo
                     ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt_Key"]))
                 };
             });
 
