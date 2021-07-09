@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System;
 using MvcBlazorDemo.Data;
 using MvcBlazorDemo.Models;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace MvcBlazorDemo.Logging
 {
@@ -25,13 +25,15 @@ namespace MvcBlazorDemo.Logging
             _recyclableMemoryStreamManager = new RecyclableMemoryStreamManager();
         }
 
-        public async Task Invoke(HttpContext context, ApplicationDbContext dbContext)
+        public async Task Invoke(HttpContext context, ApplicationDbContext dbContext, 
+            UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
-            await LogRequest(context, dbContext);
+            await LogRequest(context, dbContext, userManager, signInManager);
             await LogResponse(context, dbContext);
         }
 
-        private async Task LogRequest(HttpContext context, ApplicationDbContext dbContext)
+        private async Task LogRequest(HttpContext context, ApplicationDbContext dbContext, 
+            UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             context.Request.EnableBuffering();
 
@@ -47,28 +49,31 @@ namespace MvcBlazorDemo.Logging
             //                       $"QueryString: {context.Request.QueryString} " +
             //                       $"Request Body: {ReadStreamInChunks(requestStream)}");
 
-            string username = String.Empty;
-            //if (signInManager.IsSignedIn(context.User))
-            //{
-            //ExternalLoginInfo info = await signInManager.GetExternalLoginInfoAsync();
+            var user = (await userManager.GetUserAsync(context.User));
+            string username = user?.UserName ?? string.Empty;
 
-            //IdentityUser external = null;
+            if (signInManager.IsSignedIn(context.User))
+            {
+                ExternalLoginInfo info = await signInManager.GetExternalLoginInfoAsync();
 
-            //if (info != null)
-            //    external = await userManager.FindByLoginAsync("Microsoft", userManager.GetUserId(info.Principal));
-            ////var user = await AppUserService.GetAppUserAsync(User.Identity.Name, false);
-            //var user = await userManager.FindByNameAsync(context.User.Identity.Name);
+                IdentityUser external = null;
 
-            //username = $"{external?.UserName ?? user.UserName}" ?? string.Empty;  //$"{external?.FirstName ?? user.FirstName} {external?.LastName ?? user.LastName}";
-            //}
+                if (info != null)
+                    external = await userManager.FindByLoginAsync("Microsoft", userManager.GetUserId(info.Principal));
+                //var user = (await userManager.GetUserAsync(context.User));
 
-            username = context.User.Identity.Name ?? string.Empty;
-            var x = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                username = $"{external?.UserName ?? user?.UserName}" ?? string.Empty;
+            }
+            //username = (await userManager.GetUserAsync(context.User))?.UserName;
+
             TraceLog trace = new()
             {
                 TraceIdentifier = context.TraceIdentifier,
-                User = username, //$"{context.User}",
+                User = username,
+                LocalIpAddress = $"{context.Connection.LocalIpAddress}",
+                LocalPort = context.Connection.LocalPort,
                 RemoteIpAddress = $"{context.Connection.RemoteIpAddress}",
+                RemotePort = context.Connection.RemotePort,
                 DateTime = DateTime.Now,
                 Schema = context.Request.Scheme,
                 Host = $"{context.Request.Host}",
