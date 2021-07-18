@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FreelanceDevelopers.Blazor.Core" Version="1.0.7.7" />
+    <PackageReference Include="FreelanceDevelopers.Blazor.Core" Version="1.0.7.8" />
     <PackageReference Include="FreelanceDevelopers.Blazor.DataTable" Version="1.0.6" />
     <PackageReference Include="FreelanceDevelopers.SampleData" Version="1.0.5.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.8" />
