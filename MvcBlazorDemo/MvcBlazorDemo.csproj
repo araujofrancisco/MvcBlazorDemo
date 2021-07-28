@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="FreelanceDevelopers.Blazor.Core" Version="1.0.8.3" />
     <PackageReference Include="FreelanceDevelopers.Blazor.DataTable" Version="1.0.6" />
-    <PackageReference Include="FreelanceDevelopers.SampleData" Version="1.0.5.4" />
+    <PackageReference Include="FreelanceDevelopers.SampleData" Version="1.0.5.8" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="5.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.8" />
@@ -21,7 +21,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.1.2" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.1.3" />
   </ItemGroup>
 
 </Project>
