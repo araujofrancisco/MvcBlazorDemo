@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="FreelanceDevelopers.Blazor.Core" Version="1.0.8.3" />
-    <PackageReference Include="FreelanceDevelopers.Blazor.DataTable" Version="1.0.6" />
+    <PackageReference Include="FreelanceDevelopers.Blazor.DataTable" Version="1.0.6.3" />
     <PackageReference Include="FreelanceDevelopers.SampleData" Version="1.0.5.8" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="5.0.8" />

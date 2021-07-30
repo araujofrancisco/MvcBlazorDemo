@@ -6,7 +6,7 @@
 <h1>Tracelog</h1>
 
 <DataTable @ref="_table" TModel="TraceLog" Items="LoadItems"
-           SortChanged="(c, d) => { this.SortColumn = c; this.SortDirection = d; }"
+           SortChanged="(c, d, e) => { this.SortColumn = c; this.SortDirection = d; this.SortColumnExpr = e; }"
            ContainerCssClass="d-flex justify-center align-center"
            ContainerAttributes=@(new Dictionary<string, object>() { { "style", "width: 100%;" } })
            Styles=@(TableStyle.Striped | TableStyle.Hover)
@@ -30,13 +30,17 @@
 {
     private string SortColumn { get; set; }
     private SortDirection SortDirection { get; set; }
+    private Expression<Func<TraceLog, object>> SortColumnExpr { get; set; }
 
     private DataTable<TraceLog> _table;
 
     protected async ValueTask<ItemsProviderResult<TraceLog>> LoadItems(ItemsProviderRequest request)
     {
         var fc = await DataService.GetTraceLogs();
-        if (SortColumn != null) fc = (SortDirection == SortDirection.Ascending) ? fc.OrderBy(SortColumn).ToList() : fc.OrderByDescending(SortColumn).ToList();
+        if (SortColumnExpr != null)
+            fc = (SortDirection == SortDirection.Ascending) ? fc.OrderBy(SortColumnExpr.Compile()).ToList() : fc.OrderByDescending(SortColumnExpr.Compile()).ToList();
+        else if (SortColumn != null) 
+            fc = (SortDirection == SortDirection.Ascending) ? fc.OrderBy(SortColumn).ToList() : fc.OrderByDescending(SortColumn).ToList();
         return new ItemsProviderResult<TraceLog>(fc.Skip(request.StartIndex).Take(request.Count), fc.Count());
     }
 }
